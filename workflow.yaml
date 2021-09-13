@@ -1,0 +1,29 @@
+jobs:
+  CloneRepo:
+    resources:
+      instance-type: C3
+    outputs:
+      repo:
+        type: volume
+    uses: git-checkout@v1
+    with:
+      url: https://github.com/edublancas/gradient-test
+  runScript:
+    resources:
+      instance-type: C3
+    needs:
+      - CloneRepo
+    inputs:
+      repo: CloneRepo.outputs.repo
+    outputs:
+      generatedOutput:
+        type: dataset
+        with:
+          ref: my-dataset-id
+    uses: script@v1
+    with:
+      script: |-
+        # pip install  -r requirements.txt
+        python --version
+        echo "some output" > /outputs/generatedOutput
+      image: tensorflow/tensorflow:1.14.0-gpu-py3
